@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - System Nawigacji dla Kurierów</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <style>
+        body {
+            background-color: #212529;
+            color: #f8f9fa;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .offline-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            color: #0d6efd;
+        }
+        h1 {
+            margin-bottom: 1rem;
+        }
+        p {
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+        .btn-retry {
+            background-color: #0d6efd;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .cached-data {
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 600px;
+        }
+        .data-item {
+            background-color: #343a40;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-wifi-off" viewBox="0 0 16 16">
+            <path d="M10.706 3.294A12.545 12.545 0 0 0 8 3C5.259 3 2.723 3.882.663 5.379a.485.485 0 0 0-.048.736.518.518 0 0 0 .668.05A11.448 11.448 0 0 1 8 4c.63 0 1.249.05 1.852.148l.854-.854zM8 6c-1.905 0-3.68.56-5.166 1.526a.48.48 0 0 0-.063.745.525.525 0 0 0 .652.065 8.448 8.448 0 0 1 3.51-1.27L8 6zm2.596 1.404.785-.785c.63.24 1.227.545 1.785.907a.482.482 0 0 1 .063.745.525.525 0 0 1-.652.065 8.462 8.462 0 0 0-1.98-.932zM8 10l.933-.933a6.455 6.455 0 0 1 2.013.637c.285.145.326.524.1.75l-.015.015a.532.532 0 0 1-.611.09A5.478 5.478 0 0 0 8 10zm4.905-4.905.747-.747c.59.3 1.153.645 1.685 1.03a.485.485 0 0 1 .047.737.518.518 0 0 1-.668.05 11.493 11.493 0 0 0-1.811-1.07zM9.02 11.78c.238.14.236.464.04.66l-.707.706a.5.5 0 0 1-.707 0l-.707-.707c-.195-.195-.197-.518.04-.66A1.99 1.99 0 0 1 8 11.5c.373 0 .722.102 1.02.28zM3.472 14.95l.05-.055-.293-.293v.5l.243-.152zM1.953 3.646a.5.5 0 1 0-.707.708l12.098 12.098a.5.5 0 0 0 .707-.708L1.953 3.646z"/>
+        </svg>
+    </div>
+    <h1>Brak połączenia z internetem</h1>
+    <p>Wygląda na to, że nie masz połączenia z internetem. Zapisane trasy są dostępne w trybie offline, ale nie możesz teraz planować nowych tras.</p>
+    <button class="btn-retry" onclick="window.location.reload()">Spróbuj ponownie</button>
+    
+    <div class="cached-data" id="cached-routes">
+        <h2>Zapisane trasy:</h2>
+        <div class="data-loading">Ładowanie zapisanych tras...</div>
+    </div>
+
+    <script>
+        // Skrypt do wyświetlenia zapisanych tras (będzie działać jeśli dane są w localStorage)
+        document.addEventListener('DOMContentLoaded', function() {
+            const cachedRoutesDiv = document.getElementById('cached-routes');
+            const savedRoutes = localStorage.getItem('saved_routes');
+            
+            if (savedRoutes) {
+                try {
+                    const routes = JSON.parse(savedRoutes);
+                    
+                    if (routes.length > 0) {
+                        cachedRoutesDiv.innerHTML = '<h2>Zapisane trasy:</h2>';
+                        
+                        routes.forEach(route => {
+                            const routeDiv = document.createElement('div');
+                            routeDiv.className = 'data-item';
+                            routeDiv.innerHTML = `
+                                <h3>${route.name || 'Trasa bez nazwy'}</h3>
+                                <p>Dystans: ${route.total_distance} km</p>
+                                <p>Czas: ${route.total_time}</p>
+                                <p>Utworzono: ${new Date(route.created_at).toLocaleString()}</p>
+                            `;
+                            cachedRoutesDiv.appendChild(routeDiv);
+                        });
+                    } else {
+                        cachedRoutesDiv.innerHTML = '<h2>Zapisane trasy:</h2><p>Brak zapisanych tras.</p>';
+                    }
+                } catch (e) {
+                    cachedRoutesDiv.innerHTML = '<h2>Zapisane trasy:</h2><p>Błąd podczas ładowania zapisanych tras.</p>';
+                }
+            } else {
+                cachedRoutesDiv.innerHTML = '<h2>Zapisane trasy:</h2><p>Brak zapisanych tras.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
